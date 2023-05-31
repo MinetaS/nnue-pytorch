@@ -1074,7 +1074,7 @@ def is_stockfish_setup(directory):
     except:
         return False
 
-def setup_stockfish(directory, repo, branch_or_commit, arch, threads=1):
+def setup_stockfish(directory, repo, branch_or_commit, arch, comp, threads=1):
     if is_stockfish_setup(directory):
         LOGGER.info(f'Stockfish already setup in {directory}.')
         return
@@ -1088,7 +1088,7 @@ def setup_stockfish(directory, repo, branch_or_commit, arch, threads=1):
         env['MSYSTEM'] = 'MINGW64'
 
     with subprocess.Popen(
-            ['make', 'build', f'ARCH={arch}', f'-j{threads}'],
+            ['make', 'build', f'ARCH={arch}', f'COMP={comp}', f'-j{threads}'],
             cwd=srcdir,
             env=env
         ) as process:
@@ -2030,6 +2030,14 @@ def parse_cli_args():
         help='ARCH to use for engine compilation, e.g. x86-64-avx2 for recent hardware.'
     )
     parser.add_argument(
+        '--build-engine-comp',
+        default='gcc',
+        type=str,
+        metavar='COMP',
+        dest='build_engine_comp',
+        help='COMP to use for engine compilation, e.g. gcc or mingw.'
+    )
+    parser.add_argument(
         '--build-threads',
         default=default_build_threads,
         type=int,
@@ -2471,8 +2479,8 @@ def main():
         stockfish_test_repo = '/'.join(args.engine_test_branch.split('/')[:2])
         stockfish_base_branch_or_commit = args.engine_base_branch.split('/')[2]
         stockfish_test_branch_or_commit = args.engine_test_branch.split('/')[2]
-        setup_stockfish(stockfish_base_directory, stockfish_base_repo, stockfish_base_branch_or_commit, args.build_engine_arch, args.build_threads)
-        setup_stockfish(stockfish_test_directory, stockfish_test_repo, stockfish_test_branch_or_commit, args.build_engine_arch, args.build_threads)
+        setup_stockfish(stockfish_base_directory, stockfish_base_repo, stockfish_base_branch_or_commit, args.build_engine_arch, args.build_engine_comp, args.build_threads)
+        setup_stockfish(stockfish_test_directory, stockfish_test_repo, stockfish_test_branch_or_commit, args.build_engine_arch, args.build_engine_comp, args.build_threads)
     else:
         LOGGER.info('Not doing network testing. Either engines no provided or explicitely disabled.')
 
