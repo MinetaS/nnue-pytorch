@@ -208,6 +208,13 @@ def main():
         help="scaling for conversion to win on input (default=380.0)",
     )
     parser.add_argument(
+        "--sparsity-l1",
+        default=0.0,
+        type=float,
+        dest="sparsity_l1",
+        help="L1 regularization factor on the feature tensor to encourage sparsity"
+    )
+    parser.add_argument(
         "--gamma",
         default=0.992,
         type=float,
