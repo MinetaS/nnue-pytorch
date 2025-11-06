@@ -70,19 +70,17 @@ class NNUE(L.LightningModule):
             layer_stack_indices,
         ) = batch
 
-        scorenet = (
-            self.model(
-                us,
-                them,
-                white_indices,
-                white_values,
-                black_indices,
-                black_values,
-                psqt_indices,
-                layer_stack_indices,
-            )
-            * self.model.quantization.nnue2score
+        scorenet_logits, ft = self.model(
+            us,
+            them,
+            white_indices,
+            white_values,
+            black_indices,
+            black_values,
+            psqt_indices,
+            layer_stack_indices
         )
+        scorenet = scorenet_logits * self.model.quantization.nnue2score
 
         p = self.loss_params
         # convert the network and search scores to an estimate match result
@@ -107,6 +105,11 @@ class NNUE(L.LightningModule):
         if p.qp_asymmetry != 0.0:
             loss = loss * ((qf > pt) * p.qp_asymmetry + 1)
         loss = loss.mean()
+
+        if p.sparsity_l0 > 0.0:
+            alpha = 20.0
+            l0_proxy = (1.0 - torch.exp(-alpha * ft.abs())).mean()
+            loss += p.sparsity_l0 * l0_proxy
 
         self.log(loss_type, loss, prog_bar=True)
 

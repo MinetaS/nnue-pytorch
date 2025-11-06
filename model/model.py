@@ -344,4 +344,4 @@ class NNUEModel(nn.Module):
         # which does both the averaging and sign flip for black to move)
         x = self.layer_stacks(l0_, layer_stack_indices) + (wpsqt - bpsqt) * (us - 0.5)
 
-        return x
+        return (x, l0_)

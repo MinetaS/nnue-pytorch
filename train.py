@@ -208,6 +208,13 @@ def main():
         help="scaling for conversion to win on input (default=380.0)",
     )
     parser.add_argument(
+        "--sparsity-l0",
+        default=0.0,
+        type=float,
+        dest="sparsity_l0",
+        help="L0 regularization factor"
+    )
+    parser.add_argument(
         "--gamma",
         default=0.992,
         type=float,
@@ -377,6 +384,7 @@ def main():
         end_lambda=args.end_lambda or args.lambda_,
         pow_exp=args.pow_exp,
         qp_asymmetry=args.qp_asymmetry,
+        sparsity_l0=args.sparsity_l0
     )
     print("Loss parameters:")
     print(loss_params)

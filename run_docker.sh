@@ -35,6 +35,7 @@ echo "Using data path: $DATA_PATH"
 
 echo "Creating new container 'nnue-container'..."
 docker run -it \
+  --name nnue-container \
   $GPU_FLAGS \
   -u `id -u` \
   -v "$(pwd)":/workspace/nnue-pytorch \
